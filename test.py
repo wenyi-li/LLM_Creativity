@@ -18,15 +18,15 @@ def generate(model_name,prompt_list,max_new_tokens=512,do_sample=False,num_beams
              top_p=1,repetition_penalty=1):
     result_list=[]
     if model_name=='vicuna-13b':
-        tokenizer = LlamaTokenizer.from_pretrained("/lustre/S/zhaoyunpu/vicuna-13b/")
-        model     = LlamaForCausalLM.from_pretrained("/lustre/S/zhaoyunpu/vicuna-13b/",device_map='auto')
+        tokenizer = LlamaTokenizer.from_pretrained("/lustre/S/liwenyi/llm/vicuna-13b-v1.5-16k/")
+        model     = LlamaForCausalLM.from_pretrained("/lustre/S/liwenyi/llm/vicuna-13b-v1.5-16k/",device_map='auto')
         generator = pipeline(model=model,tokenizer=tokenizer,device_map='auto',framework='pt',task='text-generation',\
                            max_new_tokens=max_new_tokens,do_sample=do_sample,num_beams=num_beams,diversity_penalty=diversity_penalty,\
                                 temperature=temperature,top_k=top_k,top_p=top_p,repetition_penalty=repetition_penalty,min_new_tokens=10)
 
-    elif model_name=='vicuna-33b':
-        tokenizer = LlamaTokenizer.from_pretrained("/lustre/S/zhaoyunpu/vicuna-33b/")
-        model     = LlamaForCausalLM.from_pretrained("/lustre/S/zhaoyunpu/vicuna-33b/",device_map='auto')
+    elif model_name=='vicuna-7b':
+        tokenizer = LlamaTokenizer.from_pretrained("/lustre/S/liwenyi/llm/vicuna-7b-v1.5-16k/")
+        model     = LlamaForCausalLM.from_pretrained("/lustre/S/liwenyi/llm/vicuna-7b-v1.5-16k/",device_map='auto')
         generator = pipeline(model=model,tokenizer=tokenizer,device_map='auto',framework='pt',task='text-generation',\
                            max_new_tokens=max_new_tokens,do_sample=do_sample,num_beams=num_beams,diversity_penalty=diversity_penalty,\
                                 temperature=temperature,top_k=top_k,top_p=top_p,repetition_penalty=repetition_penalty,min_new_tokens=10)
@@ -54,12 +54,19 @@ def generate(model_name,prompt_list,max_new_tokens=512,do_sample=False,num_beams
 
     elif model_name=='llama-2-70b':
         config    = AutoConfig.from_pretrained("/lustre/S/liwenyi/llm/Llama-2-70b-chat-hf/",trust_remote_code=True)
-        model     = AutoModelForCausalLM.from_pretrained("/lustre/S/liwenyi/llm/Llama-2-70b-chat-hf/",config=config,device_map='auto',trust_remote_code=True)
+        model     = AutoModelForCausalLM.from_pretrained("/lustre/S/liwenyi/llm/Llama-2-70b-chat-hf/",config=config,device_map='auto',trust_remote_code=True,load_in_8bit=True)
         tokenizer = AutoTokenizer.from_pretrained("/lustre/S/liwenyi/llm/Llama-2-70b-chat-hf/")
         generator = pipeline(model=model,tokenizer=tokenizer,device_map='auto',framework='pt',task='text-generation',\
                            max_new_tokens=max_new_tokens,do_sample=do_sample,num_beams=num_beams,diversity_penalty=diversity_penalty,\
                                 temperature=temperature,top_k=top_k,top_p=top_p,repetition_penalty=repetition_penalty,min_new_tokens=10)
 
+    elif model_name=='bloomz':
+        config    = AutoConfig.from_pretrained("/lustre/S/liwenyi/llm/bloomz/",trust_remote_code=True)
+        model     = AutoModelForCausalLM.from_pretrained("/lustre/S/liwenyi/llm/bloomz/",config=config,device_map='auto',trust_remote_code=True,load_in_8bit=True)
+        tokenizer = AutoTokenizer.from_pretrained("/lustre/S/liwenyi/llm/bloomz/")
+        generator = pipeline(model=model,tokenizer=tokenizer,device_map='auto',framework='pt',task='text-generation',\
+                           max_new_tokens=max_new_tokens,do_sample=do_sample,num_beams=num_beams,diversity_penalty=diversity_penalty,\
+                                temperature=temperature,top_k=top_k,top_p=top_p,repetition_penalty=repetition_penalty,min_new_tokens=10)
 
     else:
         raise Exception("Invalid model name.")
