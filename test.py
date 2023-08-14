@@ -85,3 +85,6 @@ output.to_csv("./result/"+args.model+'_'+args.task+'_'+args.prompt_type+'_'+date
 
 
 
+
+
+
