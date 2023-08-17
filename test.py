@@ -1,5 +1,6 @@
 from transformers import AutoConfig, LlamaForCausalLM, LlamaTokenizer,AutoModelForSeq2SeqLM, AutoTokenizer,AutoModelForCausalLM,pipeline
-
+import openai
+openai.api_key ="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"
 import argparse
 import pandas as pd
 from tqdm import tqdm
@@ -54,12 +55,11 @@ def generate(model_name,prompt_list,max_new_tokens=512,do_sample=False,num_beams
 
     elif model_name=='llama-2-70b':
         config    = AutoConfig.from_pretrained("/lustre/S/liwenyi/llm/Llama-2-70b-chat-hf/",trust_remote_code=True)
-        model     = AutoModelForCausalLM.from_pretrained("/lustre/S/liwenyi/llm/Llama-2-70b-chat-hf/",config=config,device_map='auto',trust_remote_code=True,load_in_8bit=True)
+        model     = AutoModelForCausalLM.from_pretrained("/lustre/S/liwenyi/llm/Llama-2-70b-chat-hf/",config=config,device_map='auto',trust_remote_code=False)
         tokenizer = AutoTokenizer.from_pretrained("/lustre/S/liwenyi/llm/Llama-2-70b-chat-hf/")
         generator = pipeline(model=model,tokenizer=tokenizer,device_map='auto',framework='pt',task='text-generation',\
                            max_new_tokens=max_new_tokens,do_sample=do_sample,num_beams=num_beams,diversity_penalty=diversity_penalty,\
                                 temperature=temperature,top_k=top_k,top_p=top_p,repetition_penalty=repetition_penalty,min_new_tokens=10)
-
     elif model_name=='bloomz':
         config    = AutoConfig.from_pretrained("/lustre/S/liwenyi/llm/bloomz/",trust_remote_code=True)
         model     = AutoModelForCausalLM.from_pretrained("/lustre/S/liwenyi/llm/bloomz/",config=config,device_map='auto',trust_remote_code=True,load_in_8bit=True)
@@ -85,7 +85,21 @@ def generate(model_name,prompt_list,max_new_tokens=512,do_sample=False,num_beams
         result_list.append(tokenizer.batch_decode(generate_ids,skip_special_tokens=True,clean_up_tokenization_spaces=False))
     return result_list
 '''
-output=generate(model_name=args.model,prompt_list=prompt_file[args.prompt_type].tolist())
+if args.model=='gpt-3.5':
+    prompt_list=prompt_file[args.prompt_type].tolist()
+    output=[]
+    for prompt in tqdm(prompt_list):
+        message=prompt
+        user_assistant_msgs = {"role": "user", "content": message}
+        response = openai.ChatCompletion.create(model='gpt-3.5-turbo-0613',
+                                            messages=[user_assistant_msgs])
+        status_code = response["choices"][0]["finish_reason"]
+        assert status_code == "stop", f"The status code was {status_code}."
+        returned_text = response["choices"][0]["message"]["content"]
+        output.append(returned_text)
+        print(output[-1])
+else:
+    output=generate(model_name=args.model,prompt_list=prompt_file[args.prompt_type].tolist())
 output=pd.Series(output)
 output.to_csv("./result/"+args.model+'_'+args.task+'_'+args.prompt_type+'_'+datetime.datetime.now().strftime("%Y%m%d")+".csv",index=False)
 
