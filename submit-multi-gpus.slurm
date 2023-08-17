@@ -5,7 +5,7 @@
 # (TODO)
 # Please modify job name
 
-#SBATCH -J vicuna-13b              # The job name
+#SBATCH -J vicuna-7b              # The job name
 #SBATCH -o ./slurm_output/%x-%j.out        # Write the standard output to file named '<job_name>-<job_number>.out'
 #SBATCH -e ./slurm_output/%x-%j.err        # Write the standard error to file named '<job_name>-<job_number>.err'
 

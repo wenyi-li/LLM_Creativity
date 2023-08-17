@@ -47,9 +47,9 @@ echo "Node $SLURM_NODEID, LocalID $SLURM_LOCALID: Use GPU ${CUDA_VISIBLE_DEVICES
 #- Job step
 for i in unusual situation js is im consequences common_problem
 do
-    python test.py --model vicuna-13b --task $i --prompt_type basic_prompt
-    python test.py --model vicuna-13b --task $i --prompt_type instructive_prompt
-    python test.py --model vicuna-13b --task $i --prompt_type CoT_prompt
+    python test.py --model vicuna-7b --task $i --prompt_type basic_prompt
+    python test.py --model vicuna-7b --task $i --prompt_type instructive_prompt
+    python test.py --model vicuna-7b --task $i --prompt_type CoT_prompt
 done
 #- End
 echo "Task $SLURM_PROCID end at $(date "+%Y-%m-%d %H:%M:%S") on $(hostname -s)"
